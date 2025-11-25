@@ -7,8 +7,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
-# from src.components.data_transformation import DataTransformation
-# from src.components.data_transformation import DataTransformationConfig
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
 
 # from src.components.model_trainer import ModelTrainerConfig
 # from src.components.model_trainer import ModelTrainer
@@ -34,8 +34,12 @@ class DataIngestion:
             logging.info('Read the dataset as dataframe')
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)
+            # This line makes sure the folder "artifacts" exists before saving CSV file inside it. But it is Empty (created only as a path, not written yet). We used it just to build artifacts folder.
 
             df.to_csv(self.ingestion_config.raw_data_path,index=False,header=True)
+            # Folder is already created. So we can directly save the raw data at the path location mentioned here. Full raw dataset saved from StudentsPerformance.csv
+
+
 
             logging.info("Train test split initiated")
             train_set,test_set=train_test_split(df,test_size=0.2,random_state=42)
@@ -59,8 +63,8 @@ if __name__=="__main__":
     train_data,test_data=obj.initiate_data_ingestion()
 
 
-    # data_transformation=DataTransformation()
-    # train_arr,test_arr,_=data_transformation.initiate_data_transformation(train_data,test_data)
+    data_transformation=DataTransformation()
+    train_arr,test_arr,_ = data_transformation.initiate_data_transformation(train_data,test_data)
 
     # modeltrainer=ModelTrainer()
     # print(modeltrainer.initiate_model_trainer(train_arr,test_arr))

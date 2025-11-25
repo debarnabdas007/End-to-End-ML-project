@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import numpy as np 
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer  # automatically fills missing values
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
 
@@ -14,9 +14,12 @@ import os
 
 from src.utils import save_object
 
+
+
 @dataclass
 class DataTransformationConfig:
     preprocessor_obj_file_path=os.path.join('artifacts',"proprocessor.pkl")
+
 
 class DataTransformation:
     def __init__(self):
@@ -24,23 +27,23 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         '''
-        This function si responsible for data trnasformation
+        This function is responsible for data trnasformation
         
         '''
         try:
-            numerical_columns = ["writing_score", "reading_score"]
+            numerical_columns = ["writing score", "reading score"]
             categorical_columns = [
                 "gender",
-                "race_ethnicity",
-                "parental_level_of_education",
+                "race/ethnicity",
+                "parental level of education",
                 "lunch",
-                "test_preparation_course",
+                "test preparation course",
             ]
 
             num_pipeline= Pipeline(
                 steps=[
-                ("imputer",SimpleImputer(strategy="median")),
-                ("scaler",StandardScaler())
+                ("imputer",SimpleImputer(strategy="median")),   #Handling missing values by median
+                ("scaler",StandardScaler())                     #StandardScaler()
 
                 ]
             )
@@ -73,8 +76,9 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e,sys)
         
+        
     def initiate_data_transformation(self,train_path,test_path):
-
+                     
         try:
             train_df=pd.read_csv(train_path)
             test_df=pd.read_csv(test_path)
@@ -83,28 +87,29 @@ class DataTransformation:
 
             logging.info("Obtaining preprocessing object")
 
-            preprocessing_obj=self.get_data_transformer_object()
+            preprocessing_obj = self.get_data_transformer_object()
 
-            target_column_name="math_score"
-            numerical_columns = ["writing_score", "reading_score"]
+            target_column_name="math score"
+            numerical_columns = ["writing score", "reading score"]
 
-            input_feature_train_df=train_df.drop(columns=[target_column_name],axis=1)
-            target_feature_train_df=train_df[target_column_name]
+            input_feature_train_df = train_df.drop(columns=[target_column_name],axis=1)  # X_train
+            target_feature_train_df = train_df[target_column_name]                       # y_train
 
-            input_feature_test_df=test_df.drop(columns=[target_column_name],axis=1)
-            target_feature_test_df=test_df[target_column_name]
+            input_feature_test_df=test_df.drop(columns=[target_column_name],axis=1)      # X_test
+            target_feature_test_df=test_df[target_column_name]                           # y_test  
 
             logging.info(
                 f"Applying preprocessing object on training dataframe and testing dataframe."
             )
 
-            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
+            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)  #X_train_transformed
+            input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)        #X_test_transformed
 
-            train_arr = np.c_[
-                input_feature_train_arr, np.array(target_feature_train_df)
-            ]
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]   # X_train_transformed + y_train
+            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]      # X_test_transformed + y_test
+
+            '''Before concatenation, converting target to np.array() ensures it becomes 2-D internally with shape (rows, 1) so that it aligns with X.'''
+
 
             logging.info(f"Saved preprocessing object.")
 
