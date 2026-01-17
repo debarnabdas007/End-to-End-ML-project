@@ -1,8 +1,20 @@
-# ML artifacts
-artifacts/
+# =========================
+# ML Artifacts
+# =========================
+
+# Ignore everything in artifacts by default
+artifacts/*
+
+# BUT allow final deployment files
+!artifacts/model.pkl
+!artifacts/preprocessor.pkl
+
+# Ignore training logs
 catboost_info/
-*.pkl
+
+# Ignore other serialized files
 *.joblib
+# =========================
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
