@@ -18,7 +18,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path=os.path.join('artifacts',"proprocessor.pkl")
+    preprocessor_obj_file_path=os.path.join('artifacts',"preprocessor.pkl")
 
 
 class DataTransformation:
@@ -62,13 +62,12 @@ class DataTransformation:
             logging.info(f"Numerical columns: {numerical_columns}")
 
             preprocessor=ColumnTransformer(
+
                 [
                 ("num_pipeline",num_pipeline,numerical_columns),
                 ("cat_pipelines",cat_pipeline,categorical_columns)
-
                 ]
-
-
+                
             )
 
             return preprocessor
@@ -76,6 +75,7 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e,sys)
         
+
         
     def initiate_data_transformation(self,train_path,test_path):
                      

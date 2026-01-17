@@ -14,7 +14,7 @@ from src.components.model_trainer import ModelTrainerConfig
 from src.components.model_trainer import ModelTrainer
 
 
-#Creating OS-Independernt path in string format
+#Creating OS-Independernt path in 'string' format
 @dataclass
 class DataIngestionConfig:
     train_data_path: str=os.path.join('artifacts',"train.csv")
